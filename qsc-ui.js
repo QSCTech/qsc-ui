@@ -1,5 +1,5 @@
-// to config use:
-// qscUIConfig = {autoAppendNav: false}
+// qsc-ui.js
+// Licensed under the MIT license
 
 var qscUI = (function() {
     var opinions = {
