@@ -14,6 +14,17 @@ var qscUI = (function() {
         }
     }
 
+    var lazyload = {
+        js: function(src, callback) {
+            (function(d) {
+                var script = d.createElement('script');
+                script.src = src;
+                script.onload = callback; // 注意这个写法只兼容到 IE8+
+                d.head.appendChild(script);
+            })(document);
+        }
+    };
+
     var nav = {
         html:  '<div id="qsc-ui-nav">'
             + '<ul>'
@@ -39,22 +50,17 @@ var qscUI = (function() {
             var href = window.location.href;
             if(href.match(/apps\/video/)) return 4;
             if(href.match(/notice\.myqsc/)) return 2;
+            if(href.match(/test\.myqsc\.com\/notice/)) return 2;
             if(href.match(/www\.qsc\.zju\.edu\.cn/)) return 1; // 注意主站的链接要放在最后面以防错误匹配
             return false;
         },
         append: function() {
             if(!statistics.getId()) return;
-            var baseUrl = "//stat.myqsc.com/";
-            document.write(unescape("%3Cscript src='" + baseUrl + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
-            (function() {
-                if(typeof Piwik == "undefined") {
-                    setTimeout(arguments.callee, 20);
-                    return;
-                }
-                var piwikTracker = Piwik.getTracker(baseUrl + "piwik.php", statistics.getId());
+            lazyload.js('//stat.myqsc.com/piwik.js', function() {
+                var piwikTracker = Piwik.getTracker("//stat.myqsc.com/piwik.php", statistics.getId());
                 piwikTracker.trackPageView();
                 piwikTracker.enableLinkTracking();
-            })();
+            });
         }
     };
 
@@ -74,6 +80,7 @@ var qscUI = (function() {
         opinions: opinions,
         appendNav: nav.append,
         appendStatistics: statistics.append,
+        lazyloadJs: lazyload.js,
         ready: ready
     };
 })();
