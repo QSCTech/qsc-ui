@@ -15,16 +15,18 @@ var qscUI = (function() {
     }
 
     var nav = {
-        html:  '<ul>'
-                 + '<li><a href="http://www.qsc.zju.edu.cn">求是潮</a></li>'
-                 + '<li><a href="http://www.qsc.zju.edu.cn/apps/qanda">党校在线答题</a></li>'
-                 + '<li><a href="http://www.qsc.zju.edu.cn/share">Share学习交流平台</a></li>'
-                 + '<li><a href="http://notice.myqsc.com/">Notice活动发布平台</a></li>'
-                 + '<li><a href="http://m.myqsc.com/get/">Mobile手机站</a></li>'
-                 + '<li><a href="http://box.myqsc.com/">Box云优盘</a></li>'
-                 + '<li><a href="http://app.myqsc.com/voice/">Voice求是好声音</a></li>'
-                 + '<li><a href="https://passport.myqsc.com/">求是潮通行证</a></li>'
-            + '</ul>',
+        html:  '<div id="qsc-ui-nav">'
+            + '<ul>'
+            + '<li><a href="http://www.qsc.zju.edu.cn">求是潮</a></li>'
+            + '<li><a href="http://www.qsc.zju.edu.cn/apps/qanda">党校在线答题</a></li>'
+            + '<li><a href="http://www.qsc.zju.edu.cn/share">Share学习交流平台</a></li>'
+            + '<li><a href="http://notice.myqsc.com/">Notice活动发布平台</a></li>'
+            + '<li><a href="http://m.myqsc.com/get/">Mobile手机站</a></li>'
+            + '<li><a href="http://box.myqsc.com/">Box云优盘</a></li>'
+            + '<li><a href="http://app.myqsc.com/voice/">Voice求是好声音</a></li>'
+            + '<li><a href="https://passport.myqsc.com/">求是潮通行证</a></li>'
+            + '</ul>'
+            + '</div>',
         append: function() {
             (function(d) {
                 d.innerHTML = nav.html + d.innerHTML;
@@ -34,11 +36,14 @@ var qscUI = (function() {
 
     var statistics = {
         getId: function() {
-            if(window.location.href.match(/apps\/video/)) {
-                return 4;
-            }
+            var href = window.location.href;
+            if(href.match(/apps\/video/)) return 4;
+            if(href.match(/notice\.myqsc/)) return 2;
+            if(href.match(/www\.qsc\.zju\.edu\.cn/)) return 1; // 注意主站的链接要放在最后面以防错误匹配
+            return false;
         },
         append: function() {
+            if(!statistics.getId()) return;
             var baseUrl = "//stat.myqsc.com/";
             document.write(unescape("%3Cscript src='" + baseUrl + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
             (function() {
@@ -46,7 +51,7 @@ var qscUI = (function() {
                     setTimeout(arguments.callee, 20);
                     return;
                 }
-                var piwikTracker = Piwik.getTracker(baseUrl + "piwik.php", 4);
+                var piwikTracker = Piwik.getTracker(baseUrl + "piwik.php", statistics.getId());
                 piwikTracker.trackPageView();
                 piwikTracker.enableLinkTracking();
             })();
@@ -54,13 +59,15 @@ var qscUI = (function() {
     };
 
     var ready = function(callback) {
-        if (document.readyState == "interactive" || document.readyState == "complete") {
-            if(typeof callback == "function") {
-                callback();
+        (function() {
+            if (document.readyState == "interactive" || document.readyState == "complete") {
+                if(typeof callback == "function") {
+                    callback();
+                }
+            } else {
+                setTimeout(arguments.callee, 4);
             }
-        } else {
-            setTimeout(arguments.callee, 4);
-        }
+        })()
     };
 
     return {
