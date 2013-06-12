@@ -8,7 +8,7 @@ To use, load this script in any location in your page.
 <script src="http://static.myqsc.com/js/qsc-ui.js"></script>
 ```
 
-To config, add the following code before lodding this script:
+To config, add the following code before loading the script above:
 
 ```html
 <script>
